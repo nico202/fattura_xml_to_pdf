@@ -78,10 +78,15 @@ def convert(xml_file: Path, xsl_file: Path):
 def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("xml")
-    parser.add_argument("--xsl", default="sdi", choices=["sdi"])
+    parser.add_argument("--xsl", default="AssoSoftware",
+                        choices=[
+                            "AssoSoftware",
+                            "ordinaria_ver1.2.3", "fatturaPA_ver1.2.3",
+                            "Foglio_di_stile_VFSM10_v1.0.2"
+                        ])
 
     args = parser.parse_args(argv)
-    xsl_file = Path(os.path.dirname(__file__)) / f"styles/{args.xsl}.xsl"
+    xsl_file = Path(os.path.dirname(__file__)) / f"styles/Foglio_di_stile_fattura_{args.xsl}.xsl"
 
     convert(Path(args.xml), xsl_file)
 
