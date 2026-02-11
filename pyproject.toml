@@ -13,7 +13,8 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "lxml",
-    "xhtml2pdf"
+    "weasyprint",
+    "python-cryptography"
 ]
 
 [project.scripts]
