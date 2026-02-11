@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 """
 Styles file from several providers such as SDI, Aruba, ...
 
