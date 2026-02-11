@@ -4,6 +4,34 @@ from pathlib import Path
 
 import lxml.etree as ET
 from weasyprint import HTML, CSS
+from asn1crypto import cms
+
+def extract_p7m(path: Path) -> bytes:
+    data = path.read_bytes()
+
+    content_info = cms.ContentInfo.load(data)
+
+    if content_info['content_type'].native != 'signed_data':
+        raise ValueError("Non è un PKCS7 signedData")
+
+    signed_data = content_info['content']
+    encap = signed_data['encap_content_info']
+    content = encap['content']
+
+    if content is None:
+        raise ValueError("PKCS7 senza contenuto incorporato")
+
+    return content.native
+
+def ensure_xml_input(path: Path) -> Path:
+    if path.suffix.lower() != ".p7m":
+        return path
+
+    xml = extract_p7m(path)
+
+    tmp = path.with_suffix(".extracted.xml")
+    tmp.write_bytes(xml)
+    return tmp
 
 def convert(xml_file: Path, xsl_file: Path):
     dom = ET.parse(xml_file)
@@ -88,8 +116,8 @@ def main(argv=None):
     args = parser.parse_args(argv)
     xsl_file = Path(os.path.dirname(__file__)) / f"styles/Foglio_di_stile_fattura_{args.xsl}.xsl"
 
-    convert(Path(args.xml), xsl_file)
-
+    xml_path = ensure_xml_input(Path(args.xml))
+    convert(xml_path, xsl_file)
 
 if __name__ == "__main__":
     main()
